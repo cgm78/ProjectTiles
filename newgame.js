@@ -1,12 +1,17 @@
-var SCREEN_WIDTH = 720;
-var SCREEN_HEIGHT = 400;
+// Se screen constants
+var SCREEN_WIDTH = 800;
+var SCREEN_HEIGHT = 80000;
 var SCREEN_SCALE = 4;
 var DIM = 16;
 
+
+// Create game port.
 var gameport = window.document.getElementById("gameport");
 var renderer = new PIXI.autoDetectRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, {backgroundColor: 0x99D5FF});
 gameport.appendChild(renderer.view);
 
+
+// Creat main stage and screens.
 var stage = new PIXI.Container();
 stage.scale.x = SCREEN_SCALE;
 stage.scale.y = SCREEN_SCALE;
@@ -29,18 +34,21 @@ var backButton;
 var creditsButton;
 */
 
+// Create object variables
 var pship;
 var world;
 var spawn;
 var eship;
 
 
-var MOVE_LEFT = 1;
-var MOVE_RIGHT = 2;
-var MOVE_UP = 3;
-var MOVE_DOWN = 4;
-var MOVE_NONE = 0;
+// Set flying constants
+var FLY_LEFT = 1;
+var FLY_RIGHT = 2;
+var FLY_UP = 3;
+var FLY_DOWN = 4;
+var FLY_NONE = 0;
 
+// Load assets and tile map.
 PIXI.loader
 .add('mainmaptile1.json')
 .add('tileset.png')
@@ -48,6 +56,8 @@ PIXI.loader
 .add("assets.json").load(ShipMove)
 .load(ready);
 
+
+// Creates World.
 function ready() {
 createjs.Ticker.setFPS(60);
 var tu = new TileUtilities(PIXI);
@@ -62,7 +72,7 @@ pship.y = pship.gy*DIM;
 pship.anchor.x = 0.0;
 pship.anchor.y = 1.0;
 
-pship.direction = MOVE_NONE;
+pship.direction = FLY_STILL;
 pship.flying = false;
 animate();
 }
@@ -106,7 +116,7 @@ function loadtitle()
 	stage.addChild(titleScreen);
 	animate();
 }
-*/
+
 function loadGame()
 {
 	game = new PIXI.Sprite(PIXI.Texture.fromFrame("background.png"));
@@ -118,7 +128,7 @@ function loadGame()
 	stage.addChild(gameScreen);
 	animate();
 }
-/*
+
 function loadGuide()
 {
 	instructionsScreen = new PIXI.Sprite(PIXI.Texture.fromFrame("background.png"));
@@ -187,6 +197,7 @@ function loadEnd()
 	animate();
 }	
 */
+// Plays frames for moving ship.
   function ShipMove(){
 
     var frames = [];
@@ -198,9 +209,11 @@ function loadEnd()
       flying.play;
   }
 
-function move() {
 
-  if (pship.direction == MOVE_NONE) {
+  // Flys ship from depending on user input.
+function fly() {
+
+  if (pship.direction == FLY_STILL) {
     pship.flying = false;
     return;
   }
@@ -208,10 +221,10 @@ function move() {
   var dx = 0;
   var dy = 0;
 
-  if (pship.direction == MOVE_LEFT) dx -= 1;
-  if (pship.direction == MOVE_RIGHT) dx += 1;
-  if (pship.direction == MOVE_UP) dy -= 1;  
-  if (pship.direction == MOVE_DOWN) dy += 1;
+  if (pship.direction == FLY_LEFT) dx -= 1;
+  if (pship.direction == FLY_RIGHT) dx += 1;
+  if (pship.direction == FLY_UP) dy -= 1;  
+  if (pship.direction == FLY_DOWN) dy += 1;
 
   pship.gx += dx;
   pship.gy += dy;
@@ -222,16 +235,17 @@ function move() {
 
 }
 
+// Gets user input for flying ship.
 window.addEventListener("keydown", function (e) {
     
     if (e.keyCode == 87)
-      pship.direction = MOVE_UP;
+      pship.direction = FLY_UP;
     else if (e.keyCode == 83)
-      pship.direction = MOVE_DOWN;
+      pship.direction = FLY_DOWN;
     else if (e.keyCode == 65)
-      pship.direction = MOVE_LEFT;
+      pship.direction = FLY_LEFT;
     else if (e.keyCode == 68)
-      pship.direction = MOVE_RIGHT;
+      pship.direction = FLY_RIGHT;
   
     move();
   });
@@ -239,12 +253,14 @@ window.addEventListener("keydown", function (e) {
   
   PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
   
+  // Creates stage with camera.
   function animate(timestamp) {
     requestAnimationFrame(animate);
     update_camera();
     renderer.render(stage);
   }
   
+  // Keeps camera on player.
   function update_camera() {
     stage.x = -pship.x*SCREEN_SCALE + SCREEN_WIDTH/2 - pship.width/2*SCREEN_SCALE;
     stage.y = -pship.y*SCREEN_SCALE + SCREEN_HEIGHT/2 + pship.height/2*SCREEN_SCALE;
